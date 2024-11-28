@@ -38,21 +38,93 @@
             <h2>Donate SOL for Liquidity</h2>
             <p>Your contributions will help grow Prison Break Token. Donate SOL to: <strong>35bqppHs2CtSipRhEtpC7oLwAiZquZAMWh9AdANvHhK7</strong></p>
         </section>
-        <section class="tracker">
-    <h2>Transaction Tracker</h2>
+        <section>
+    <h1>Solana Transaction Tracker</h1>
     <table>
         <thead>
             <tr>
                 <th>Buyer Address</th>
                 <th>Amount (SOL)</th>
-                <th>Percentage of Total</th>
+                <th>Transaction Signature</th>
             </tr>
         </thead>
         <tbody id="transactionTable">
-            <!-- Rows will be dynamically added here -->
+            <tr><td colspan="3">Fetching transactions...</td></tr>
         </tbody>
     </table>
+
+    <script>
+        const tokenMintAddress = "YOUR_TOKEN_MINT_ADDRESS"; // Replace with your token mint address
+        const rpcUrl = "https://api.mainnet-beta.solana.com"; // Solana RPC endpoint
+
+        async function fetchTransactions() {
+            try {
+                // Fetch signatures for the token's address
+                const response = await fetch(rpcUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        jsonrpc: "2.0",
+                        id: 1,
+                        method: "getSignaturesForAddress",
+                        params: [tokenMintAddress, { limit: 10 }]
+                    })
+                });
+
+                const data = await response.json();
+                const signatures = data.result;
+
+                // Fetch details for each transaction signature
+                const transactions = await Promise.all(
+                    signatures.map(async (signatureInfo) => {
+                        const txResponse = await fetch(rpcUrl, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                jsonrpc: "2.0",
+                                id: 1,
+                                method: "getTransaction",
+                                params: [signatureInfo.signature, { encoding: "json" }]
+                            })
+                        });
+                        return await txResponse.json();
+                    })
+                );
+
+                // Process and display the transactions
+                const tableBody = document.getElementById("transactionTable");
+                tableBody.innerHTML = ""; // Clear existing rows
+                transactions.forEach((tx, index) => {
+                    if (tx.result) {
+                        const buyer = tx.result.transaction.message.accountKeys[0]; // Example buyer address
+                        const signature = signatures[index].signature;
+                        const amount = parseAmount(tx.result); // Replace with token-specific logic
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${buyer}</td>
+                                <td>${amount} SOL</td>
+                                <td>${signature}</td>
+                            </tr>
+                        `;
+                    }
+                });
+            } catch (error) {
+                console.error("Error fetching transactions:", error);
+                document.getElementById("transactionTable").innerHTML = `<tr><td colspan="3">Error fetching transactions</td></tr>`;
+            }
+        }
+
+        // Helper to parse the transaction amount (modify for your token)
+        function parseAmount(transaction) {
+            const lamports = transaction.meta.postBalances[0] - transaction.meta.preBalances[0];
+            return (lamports / 1e9).toFixed(2); // Convert lamports to SOL
+        }
+
+        // Fetch transactions on page load
+        document.addEventListener("DOMContentLoaded", fetchTransactions);
+    </script>
 </section>
+
 
     </main>
     <footer>
