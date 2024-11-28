@@ -19,6 +19,19 @@ h1, h2 {
     clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
 }
 
+/* Logo Section */
+.logo-section {
+    animation: fadeInScale 2s ease-in-out;
+    margin-bottom: 20px;
+}
+
+.logo-section img {
+    max-width: 150px;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+}
+
+/* Title & Subtitle */
 .title {
     font-size: 2.5rem;
     font-weight: bold;
@@ -45,26 +58,6 @@ main {
     animation: fadeIn 1s ease-in-out;
 }
 
-.links ul {
-    list-style: none;
-    padding: 0;
-}
-
-.links li {
-    margin: 10px 0;
-}
-
-.links a {
-    color: #ffcc00;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s ease;
-}
-
-.links a:hover {
-    color: #f76c6c;
-}
-
 /* Footer */
 footer {
     padding: 10px 0;
@@ -89,6 +82,17 @@ footer {
 }
 
 /* Animations */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
