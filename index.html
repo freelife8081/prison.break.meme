@@ -38,8 +38,8 @@
             <h2>Donate SOL for Liquidity</h2>
             <p>Your contributions will help grow Prison Break Token. Donate SOL to: <strong>35bqppHs2CtSipRhEtpC7oLwAiZquZAMWh9AdANvHhK7</strong></p>
         </section>
-        <section>
-    <h1>Prison Break Transaction Tracker</h1>
+      <section>
+    <h1>Solana Transaction Tracker</h1>
     <table>
         <thead>
             <tr>
@@ -54,7 +54,7 @@
     </table>
 
     <script>
-        const tokenMintAddress = "2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump"; // Replace with your token mint address
+        const tokenMintAddress = "YOUR_TOKEN_MINT_ADDRESS"; // Replace with your token mint address
         const rpcUrl = "https://api.mainnet-beta.solana.com"; // Solana RPC endpoint
 
         async function fetchTransactions() {
@@ -93,9 +93,9 @@
                 tableBody.innerHTML = ""; // Clear existing rows
                 transactions.forEach((tx, index) => {
                     if (tx.result) {
-                        const buyer = tx.result.transaction.message.accountKeys[0]; 
+                        const buyer = tx.result.transaction.message.accountKeys[0];
                         const signature = signatures[index].signature;
-                        const amount = parseAmount(tx.result); 
+                        const amount = parseAmount(tx.result);
                         tableBody.innerHTML += `
                             <tr class="transaction-row">
                                 <td>${buyer}</td>
@@ -116,6 +116,10 @@
             return (lamports / 1e9).toFixed(2); // Convert lamports to SOL
         }
 
+        // Fetch transactions every 30 seconds for real-time updates
+        setInterval(fetchTransactions, 30000);
+
+        // Initially fetch transactions when the page loads
         document.addEventListener("DOMContentLoaded", fetchTransactions);
     </script>
 
@@ -194,8 +198,6 @@
         }
     </style>
 </section>
-
-
 
     </main>
     <footer>
