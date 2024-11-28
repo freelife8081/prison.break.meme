@@ -16,7 +16,7 @@ document.querySelector(".donate strong").addEventListener("click", function () {
             alert("Donation address copied to clipboard!");
         },
         () => {
-            alert("Failed to copy donation address. Please try again.");
+            alert("Failed to copy donation address. Please try again..");
         }
     );
 });
