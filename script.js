@@ -21,33 +21,70 @@ document.querySelector(".donate strong").addEventListener("click", function () {
     );
 });
 
-// Placeholder: Replace this with real blockchain data fetch logic
+const tokenMintAddress = "2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump"; // Replace with your token mint address
+const rpcUrl = "https://api.mainnet-beta.solana.com"; // Solana RPC endpoint
+
 async function fetchTransactions() {
-    // Example transactions (Replace with API calls)
-    const transactions = [
-        { buyer: "Address_1", amount: 5 },
-        { buyer: "Address_2", amount: 10 },
-        { buyer: "Address_3", amount: 15 },
-    ];
+    try {
+        const response = await fetch(rpcUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                jsonrpc: "2.0",
+                id: 1,
+                method: "getSignaturesForAddress",
+                params: [tokenMintAddress, { limit: 10 }]
+            })
+        });
 
-    // Calculate total amount
-    const total = transactions.reduce((sum, tx) => sum + tx.amount, 0);
+        const data = await response.json();
+        const signatures = data.result;
 
-    // Populate the table
-    const tableBody = document.getElementById("transactionTable");
-    tableBody.innerHTML = ""; // Clear table before adding rows
-    transactions.forEach((tx) => {
-        const percentage = ((tx.amount / total) * 100).toFixed(2);
-        const row = `
-            <tr>
-                <td>${tx.buyer}</td>
-                <td>${tx.amount.toFixed(2)} SOL</td>
-                <td>${percentage}%</td>
-            </tr>
-        `;
-        tableBody.innerHTML += row;
-    });
+        const transactions = await Promise.all(
+            signatures.map(async (signatureInfo) => {
+                const txResponse = await fetch(rpcUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        jsonrpc: "2.0",
+                        id: 1,
+                        method: "getTransaction",
+                        params: [signatureInfo.signature, { encoding: "json" }]
+                    })
+                });
+                return await txResponse.json();
+            })
+        );
+
+        const tableBody = document.getElementById("transactionTable");
+        tableBody.innerHTML = ""; // Clear existing rows
+        transactions.forEach((tx, index) => {
+            if (tx.result) {
+                const buyer = tx.result.transaction.message.accountKeys[0]; 
+                const signature = signatures[index].signature;
+                const amount = parseAmount(tx.result); 
+                tableBody.innerHTML += `
+                    <tr class="transaction-row">
+                        <td>${buyer}</td>
+                        <td>${amount} SOL</td>
+                        <td>${signature}</td>
+                    </tr>
+                `;
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching transactions:", error);
+        document.getElementById("transactionTable").innerHTML = `<tr><td colspan="3">Error fetching transactions</td></tr>`;
+    }
 }
 
-// Fetch and display transactions on page load
+function parseAmount(transaction) {
+    const lamports = transaction.meta.postBalances[0] - transaction.meta.preBalances[0];
+    return (lamports / 1e9).toFixed(2); // Convert lamports to SOL
+}
+
+// Fetch transactions every 30 seconds for real-time updates
+setInterval(fetchTransactions, 30000);
+
+// Initially fetch transactions when the page loads
 document.addEventListener("DOMContentLoaded", fetchTransactions);
