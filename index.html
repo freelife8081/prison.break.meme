@@ -54,12 +54,11 @@
     </table>
 
     <script>
-        const tokenMintAddress = "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"; // Replace with your token mint address
+        const tokenMintAddress = "2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump"; // Replace with your token mint address
         const rpcUrl = "https://api.mainnet-beta.solana.com"; // Solana RPC endpoint
 
         async function fetchTransactions() {
             try {
-                // Fetch signatures for the token's address
                 const response = await fetch(rpcUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -74,7 +73,6 @@
                 const data = await response.json();
                 const signatures = data.result;
 
-                // Fetch details for each transaction signature
                 const transactions = await Promise.all(
                     signatures.map(async (signatureInfo) => {
                         const txResponse = await fetch(rpcUrl, {
@@ -91,16 +89,15 @@
                     })
                 );
 
-                // Process and display the transactions
                 const tableBody = document.getElementById("transactionTable");
                 tableBody.innerHTML = ""; // Clear existing rows
                 transactions.forEach((tx, index) => {
                     if (tx.result) {
-                        const buyer = tx.result.transaction.message.accountKeys[0]; // Example buyer address
+                        const buyer = tx.result.transaction.message.accountKeys[0]; 
                         const signature = signatures[index].signature;
-                        const amount = parseAmount(tx.result); // Replace with token-specific logic
+                        const amount = parseAmount(tx.result); 
                         tableBody.innerHTML += `
-                            <tr>
+                            <tr class="transaction-row">
                                 <td>${buyer}</td>
                                 <td>${amount} SOL</td>
                                 <td>${signature}</td>
@@ -114,16 +111,90 @@
             }
         }
 
-        // Helper to parse the transaction amount (modify for your token)
         function parseAmount(transaction) {
             const lamports = transaction.meta.postBalances[0] - transaction.meta.preBalances[0];
             return (lamports / 1e9).toFixed(2); // Convert lamports to SOL
         }
 
-        // Fetch transactions on page load
         document.addEventListener("DOMContentLoaded", fetchTransactions);
     </script>
+
+    <style>
+        section {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            font-family: 'Arial', sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1f4f75;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 1.1em;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        td:hover {
+            background-color: #e0f7fa;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        .transaction-row {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Simple fade-in animation */
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Add responsive design for mobile */
+        @media (max-width: 768px) {
+            table {
+                font-size: 0.9em;
+            }
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
 </section>
+
 
 
     </main>
