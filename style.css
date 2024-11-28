@@ -58,6 +58,28 @@ main {
     animation: fadeIn 1s ease-in-out;
 }
 
+/* Links Styling */
+.links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.links li {
+    margin: 10px 0;
+}
+
+.links a {
+    color: #ffcc00; /* Bright yellow for visibility */
+    text-decoration: none; /* Removes underline */
+    font-weight: bold; /* Makes the text stand out */
+    transition: color 0.3s ease; /* Smooth transition on hover */
+}
+
+.links a:hover {
+    color: #f76c6c; /* Changes to red on hover for effect */
+    text-decoration: underline; /* Adds underline on hover */
+}
+
 /* Footer */
 footer {
     padding: 10px 0;
