@@ -1,260 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nuur Airdrop Checker</title>
+  <title>Sidra ArbitrageBot UI</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f7f7f7;
-      color: #333;
-    }
-
-    header {
-      background-color: #1f2b36;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-    }
-
-    .logo {
-      max-width: 150px;
-      margin-right: 20px;
-    }
-
-    button {
-      background-color: #1f2b36;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      margin: 10px;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #3c4b61;
-    }
-
-    main {
-      padding: 40px;
-      text-align: center;
-    }
-
-    .animated {
-      animation: fadeIn 2s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    #eligibilityInstructions {
-      margin-top: 30px;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      text-align: left;
-    }
-
-    #eligibilityResult {
-      margin-top: 30px;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    footer {
-      background-color: #1f2b36;
-      padding: 40px;
-      color: white;
-      text-align: center;
-    }
-
-    footer .footer-section {
-      margin-bottom: 20px;
-    }
-
-    footer .footer-section a {
-      color: white;
-      text-decoration: none;
-      font-size: 16px;
-    }
-
-    footer .footer-section a:hover {
-      text-decoration: underline;
-    }
-
-    #claimBtn {
-      background-color: #28a745;
-    }
-
-    #claimBtn:hover {
-      background-color: #218838;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <img src="logo.png" alt="Nuur Logo" class="logo" />
+  <div class="container">
+    <h1>Sidra ArbitrageBot Control Panel</h1>
     <button id="connectBtn">Connect Wallet</button>
-  </header>
+    <p id="walletAddress"></p>
 
-  <main>
-    <h1 class="animated">Check Nuur Airdrop Eligibility</h1>
-    <button id="checkEligibilityBtn" disabled>Check Eligibility</button>
-    
-    <!-- Airdrop eligibility instructions section -->
-    <section id="eligibilityInstructions">
-      <h2>How to Become Eligible for the Nuur Airdrop</h2>
-      <p>To be eligible for the Nuur Airdrop, you must meet the following criteria:</p>
-      <ul>
-        <li><strong>Step 1:</strong> You must have bought Nuur tokens during the presale market.</li>
-        <li><strong>Step 2:</strong> You must have held at least 500,000 Nuur tokens in your wallet for more than a month.</li>
-        <li><strong>Step 3:</strong> You must use the same wallet address that was used to purchase the tokens during the presale.</li>
-      </ul>
-      <p>If you meet all the above criteria, you can check your eligibility and claim your airdrop tokens!</p>
-    </section>
-
-    <!-- Airdrop eligibility result -->
-    <div id="eligibilityResult" style="display:none;">
-      <h3>Your Airdrop Eligibility Status</h3>
-      <p id="eligibilityText"></p>
+    <div class="balance">
+      <p><strong>FREEt Balance:</strong> <span id="freetBal">...</span></p>
+      <p><strong>wSDA Balance:</strong> <span id="wsdaBal">...</span></p>
     </div>
 
-    <p id="result"></p>
-    <button id="claimBtn" style="display:none;">Claim Airdrop</button>
-  </main>
+    <input type="number" id="amountInput" placeholder="Amount to Arbitrage" />
+    
+    <div class="buttons">
+      <button onclick="arbitrage('freetToWsda')">FREEt → wSDA</button>
+      <button onclick="arbitrage('wsdaToFreet')">wSDA → FREEt</button>
+    </div>
 
-  <footer>
-    <section class="footer-section">
-      <h3>About Us</h3>
-      <p>Nuur is a decentralized community-driven project on the Sidra Chain. Our mission is to reward long-term holders through fair airdrops.</p>
-    </section>
-    <section class="footer-section">
-      <h3>Community</h3>
-      <a href="https://twitter.com/NuurTokenSidra" target="_blank">Twitter</a>
-      <a href="https://t.me/NoorTokenCommunity_81" target="_blank">Telegram</a>
-    </section>
-    <section class="footer-section">
-      <h3>Contact Us</h3>
-      <p>Email: info@nuurtoken.com</p>
-    </section>
-  </footer>
+    <p id="status"></p>
+  </div>
 
-  <script>
-    const connectBtn = document.getElementById("connectBtn");
-    const checkBtn = document.getElementById("checkEligibilityBtn");
-    const claimBtn = document.getElementById("claimBtn");
-    const result = document.getElementById("result");
-    const eligibilityResult = document.getElementById("eligibilityResult");
-    const eligibilityText = document.getElementById("eligibilityText");
-
-    const NUR_TOKEN_ADDRESS = "0x3f2C99C23eE666096d2cFda162A4bFBcC4AE8de8";
-    const AIRDROP_CONTRACT_ADDRESS = "0x2B5dB4de40A5C6b6055F7a81764d02CD4c14F8eE";
-    const AIRDROP_ABI = [{"inputs":[{"internalType":"address","name":"_nurTokenAddress","type":"address"},{"internalType":"uint256","name":"_claimStartTime","type":"uint256"},{"internalType":"uint256","name":"_claimEndTime","type":"uint256"},{"internalType":"address","name":"_presaleContract","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"AirdropClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdrawn","type":"event"},{"inputs":[],"name":"claimAirdrop","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"hasClaimed","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"hasReceivedFromPresale","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nurToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"presaleContract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"setReceivedFromPresale","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawUnclaimed","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-
-    let provider;
-    let signer;
-    let userAddress;
-
-    connectBtn.onclick = async () => {
-  if (window.ethereum && window.ethereum.isMetaMask) {
-    try {
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-      if (accounts.length === 0) {
-        alert("No accounts found. Please connect an account in MetaMask.");
-      } else {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        signer = provider.getSigner();
-        userAddress = await signer.getAddress();
-        checkBtn.disabled = false;
-        console.log("Connected account:", userAddress);
-      }
-    } catch (error) {
-      if (error.code === 4001) {
-        alert("Connection request rejected by the user.");
-      } else {
-        console.error("Error connecting to MetaMask:", error);
-      }
-    }
-  } else {
-    alert("MetaMask not found! Please install MetaMask.");
-  }
-};
-
-    checkBtn.onclick = async () => {
-      eligibilityResult.style.display = "block";
-      eligibilityText.textContent = "Checking eligibility...";
-
-      try {
-        const nurContract = new ethers.Contract(
-          NUR_TOKEN_ADDRESS,
-          ["function balanceOf(address owner) view returns (uint256)"],
-          provider
-        );
-
-        const balance = await nurContract.balanceOf(userAddress);
-        const humanReadable = Number(ethers.utils.formatUnits(balance, 18));
-
-        let reward = 0;
-
-        if (humanReadable >= 500000 && humanReadable < 1000000) {
-          reward = 500;
-        } else if (humanReadable >= 1000000 && humanReadable <= 1500000) {
-          reward = 1000;
-        } else if (humanReadable >= 1600000) {
-          reward = 5000;
-        }
-
-        const airdropContract = new ethers.Contract(
-          AIRDROP_CONTRACT_ADDRESS,
-          AIRDROP_ABI,
-          provider
-        );
-        const hasClaimed = await airdropContract.hasClaimed(userAddress);
-        const hasBoughtFromPresale = await airdropContract.hasReceivedFromPresale(userAddress);
-
-        if (hasClaimed) {
-          eligibilityText.textContent = "You have already claimed your airdrop.";
-        } else if (!hasBoughtFromPresale) {
-          eligibilityText.textContent = "You need to have participated in the presale to be eligible.";
-        } else if (reward > 0) {
-          eligibilityText.textContent = `You are eligible for a ${reward} Nuur token airdrop!`;
-          claimBtn.style.display = "inline-block";
-        } else {
-          eligibilityText.textContent = "You are not eligible for the airdrop.";
-        }
-      } catch (err) {
-        eligibilityText.textContent = "Error checking eligibility. Please try again.";
-        console.error(err);
-      }
-    };
-
-    claimBtn.onclick = async () => {
-      const airdropContract = new ethers.Contract(AIRDROP_CONTRACT_ADDRESS, AIRDROP_ABI, signer);
-      try {
-        await airdropContract.claimAirdrop();
-        eligibilityText.textContent = "Airdrop claimed successfully!";
-        claimBtn.style.display = "none";
-      } catch (err) {
-        eligibilityText.textContent = "Error claiming airdrop. Please try again.";
-        console.error(err);
-      }
-    };
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
