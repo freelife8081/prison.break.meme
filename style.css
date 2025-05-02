@@ -1,152 +1,36 @@
-/* General Styles */
 body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #1a1a1a, #333);
-    color: #fff;
-    text-align: center;
-    overflow-x: hidden;
+  font-family: sans-serif;
+  background: #121212;
+  color: #f0f0f0;
+  text-align: center;
+  padding: 30px;
 }
 
-h1, h2 {
-    margin: 0;
+.container {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 0 0 10px #00ffaa20;
 }
 
-/* Header */
-.header {
-    background: linear-gradient(45deg, #f76c6c, #ffcc00);
-    padding: 50px 0;
-    clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
+button {
+  background: #00ffaa;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-/* Logo Section */
-.logo-section {
-    animation: fadeInScale 2s ease-in-out;
-    margin-bottom: 20px;
-    text-shadow: -4px 4px #ef3550,
-               -8px 8px #f48fb1,
-               -12px 12px #7e57c2,
-               -16px 16px #2196f3,
-               -20px 20px #26c6da,
-               -24px 24px #43a047,
-               -28px 28px #eeff41;
-}
-
-.logo-section img {
-    max-width: 150px;
-    border-radius: 50%;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-}
-
-/* Title & Subtitle */
-.title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    animation: pulse 2s infinite;
-    text-shadow: -4px 4px #ef3550,
-               -8px 8px #f48fb1,
-               -12px 12px #7e57c2,
-               -16px 16px #2196f3,
-               -20px 20px #26c6da,
-               -24px 24px #43a047,
-               -28px 28px #eeff41,
-               -32px 32px #f9a825,
-               -36px 36px #ff5722;
-}
-
-.subtitle {
-    font-size: 1.2rem;
-    margin-top: 10px;
-}
-
-/* Sections */
-main {
-    padding: 20px;
-}
-
-.about, .links, .donate {
-    margin: 30px auto;
-    max-width: 600px;
-    padding: 20px;
-    border-radius: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    animation: fadeIn 1s ease-in-out;
-}
-
-/* Links Styling */
-.links ul {
-    list-style: none;
-    padding: 0;
-}
-
-.links li {
-    margin: 10px 0;
-}
-
-.links a {
-    color: #ffcc00; /* Bright yellow for visibility */
-    text-decoration: none; /* Removes underline */
-    font-weight: bold; /* Makes the text stand out */
-    transition: color 0.3s ease; /* Smooth transition on hover */
-}
-
-.links a:hover {
-    color: #f76c6c; /* Changes to red on hover for effect */
-    text-decoration: underline; /* Adds underline on hover */
-}
-
-/* Footer */
-footer {
-    padding: 10px 0;
-    background: #111;
-    font-size: 0.9rem;
-    margin-top: 20px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .title {
-        font-size: 2rem;
-    }
-
-    .subtitle {
-        font-size: 1rem;
-    }
-
-    .about, .links, .donate {
-        padding: 15px;
-    }
-}
-
-/* Animations */
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.5);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
+input {
+  padding: 10px;
+  border-radius: 8px;
+  margin: 10px;
+  width: 80%;
+  border: 1px solid #ccc;
+  background: #2a2a2a;
+  color: #fff;
 }
